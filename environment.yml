@@ -9,6 +9,7 @@ dependencies:
   - scipy
   - pip
   - pip:
+    - flake8
     - gensim
     - fastapi
     - uvicorn[standard]
