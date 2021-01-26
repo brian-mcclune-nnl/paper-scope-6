@@ -1,0 +1,14 @@
+name: dochunt
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - nodejs>=15.0
+  - python>=3.8,<3.9
+  - numpy
+  - scipy
+  - pip
+  - pip:
+    - gensim
+    - fastapi
+    - uvicorn[standard]
