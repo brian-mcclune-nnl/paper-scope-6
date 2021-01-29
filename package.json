@@ -7,8 +7,10 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^2.10.0",
     "axios": "^0.21.1",
-    "vue": "^3.0.5"
+    "vue": "^3.0.5",
+    "vuex": "^4.0.0-rc.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.1.2",
