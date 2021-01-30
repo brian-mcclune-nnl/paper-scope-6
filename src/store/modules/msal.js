@@ -25,3 +25,11 @@ const mutations = {
     state.accessToken = token;
   }
 }
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  mutations,
+  actions
+}
