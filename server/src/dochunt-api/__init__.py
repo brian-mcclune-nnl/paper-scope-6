@@ -2,7 +2,7 @@
 
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -23,5 +23,8 @@ app.add_middleware(
 
 
 @app.get('/')
-async def root():
-    return {'message': 'Hello World from FastAPI'}
+async def root(request: Request):
+    return {
+        'message': 'Hello World from FastAPI',
+        'request_headers': request.headers,
+    }
