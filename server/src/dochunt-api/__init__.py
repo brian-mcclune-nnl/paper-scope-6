@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://127.0.0.1:3000",
-    "https://localhost:3000",
+    "https://localhost:3000/",
+    "https://icy-wave-07ae5a40f.azurestaticapps.net/",
 ]
 
 app.add_middleware(
