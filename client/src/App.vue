@@ -20,7 +20,8 @@ const username = computed(() =>
 );
 
 const getMsg = () => {
-  axios.get('http://127.0.0.1:21383')
+  // TODO: pull API endpoint definitions out of here
+  axios.get('https://dochunt-fast-api.azurewebsites.net/')
     .then(function (res) {
       msg.value = res.data.message;
     })
