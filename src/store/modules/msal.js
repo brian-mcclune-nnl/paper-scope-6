@@ -7,7 +7,9 @@ const state = () => ({
       'https://clunacy.b2clogin.com/clunacy.onmicrosoft.com/' +
       'B2C_1_dochuntsignupsignin',
       knownAuthories: 'clunacy.b2clogin.com',
-      redirectUri: 'https://localhost:3000/'
+      redirectUri: import.meta.env.PROD
+        ? 'https://icy-wave-07ae5a40f.azurestaticapps.net/'
+        : 'https://localhost:3000/'
     },
     cache: {
       cacheLocation: 'localStorage',
