@@ -1,6 +1,7 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
   <button @click="signIn">Signed in as: {{ username }}</button>
+  <button @click="getMsg">Refresh Message</button>
   <HelloWorld :msg="msg" />
 </template>
 
@@ -21,19 +22,33 @@ const username = computed(() =>
 
 const getMsg = () => {
   // TODO: pull API endpoint definitions out of here
-  axios.get('https://dochunt-fast-api.azurewebsites.net/')
-    .then(function (res) {
-      msg.value = res.data.message;
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
+  const endpoint = import.meta.env.PROD
+    ? 'https://dochunt-fast-api.azurewebsites.net/'
+    : 'http://127.0.0.1:21383/';
+
+  let headers = { from: 'bpmcclune@gmail.com' };
+
+  if (store.state.msal.account !== null) {
+    msalApp.acquireTokenSilent({ account: store.state.msal.account })
+      .then((res) => {
+        console.log(res);
+        headers['Authorization'] = `Bearer ${res.idToken}`;
+        return axios.get(endpoint, { headers });
+      })
+      .then((res) => {
+        console.log(res);
+        msg.value = res.data.message;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 }
 
 const signIn = () => {
   msalApp.loginPopup({})
     .then((res) => {
-      console.log('response', res);
+      console.log(res);
       if (res !== null) {
         store.dispatch('msal/setAccount', res.account);
         msalApp.setActiveAccount(res.account);
@@ -44,7 +59,7 @@ const signIn = () => {
       }
     })
     .catch((err) => {
-      console.log('error', err);
+      console.log(err);
     });
 }
 
