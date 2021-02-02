@@ -7,9 +7,12 @@ dependencies:
   - python>=3.8,<3.9
   - numpy
   - scipy
+  - conda-forge::jupyterlab
   - pip
   - pip:
     - flake8
     - gensim
     - fastapi
     - uvicorn[standard]
+    - msal
+    - jwt
