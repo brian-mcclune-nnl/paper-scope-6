@@ -8,7 +8,7 @@ const state = () => ({
       'B2C_1_dochuntsignupsignin',
       knownAuthories: 'clunacy.b2clogin.com',
       redirectUri: import.meta.env.PROD
-        ? 'https://icy-wave-07ae5a40f.azurestaticapps.net/'
+        ? 'https://dochunt-vue3-spa.azurewebsites.net/'
         : 'https://localhost:3000/'
     },
     cache: {
