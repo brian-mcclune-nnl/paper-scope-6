@@ -10,7 +10,7 @@ app = FastAPI()
 
 origins = [
     "https://localhost:3000",
-    "https://icy-wave-07ae5a40f.azurestaticapps.net/",
+    "https://dochunt-vue3-spa.azurewebsites.net/",
 ]
 
 app.add_middleware(
