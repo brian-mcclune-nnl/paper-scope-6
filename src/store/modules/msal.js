@@ -2,7 +2,7 @@
 const state = () => ({
   config: {
     auth: {
-      clientId: '7a0d396a-c9aa-4a65-8bff-e906fef7b0c7',
+      clientId: 'f95c6431-ef71-4809-ab02-0c94c11a71ee',
       authority:
       'https://clunacy.b2clogin.com/clunacy.onmicrosoft.com/' +
       'B2C_1_dochuntsignupsignin',
