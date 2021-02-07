@@ -10,6 +10,8 @@ app = FastAPI()
 
 origins = [
     "https://localhost:3000",
+    "https://localhost:3000/",
+    "https://dochunt-vue3-spa.azurewebsites.net",
     "https://dochunt-vue3-spa.azurewebsites.net/",
 ]
 
