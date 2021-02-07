@@ -22,7 +22,7 @@ const username = computed(() => {
     const claims = store.state.msal.account.idTokenClaims;
     return `${claims.given_name} ${claims.family_name}`;
   }
-};
+});
 
 const getMsg = () => {
   // TODO: pull API endpoint definitions out of here
