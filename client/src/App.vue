@@ -16,9 +16,13 @@ const store = useStore();
 const msg = ref("Hello Vue 3 + Vite");
 const msalApp = new PublicClientApplication(store.state.msal.config);
 
-const username = computed(() =>
-  store.state.msal.account !== null ? store.state.msal.account.name : ''
-);
+const username = computed(() => {
+  if (store.state.msal.account === null) return '<unknown';
+  else {
+    const claims = store.state.msal.account.idTokenClaims;
+    return `${claims.given_name} ${claims.family_name}`;
+  }
+};
 
 const getMsg = () => {
   // TODO: pull API endpoint definitions out of here
