@@ -29,7 +29,9 @@ const getMsg = () => {
   let headers = { from: 'bpmcclune@gmail.com' };
 
   if (store.state.msal.account !== null) {
-    msalApp.acquireTokenSilent({ account: store.state.msal.account })
+    const scopes = ['https://clunacy.onmicrosoft.com/' +
+      '7ea70574-6eb1-42f2-ab65-d88d33884ccb/user.impersonate'];
+    msalApp.acquireTokenSilent({ account: store.state.msal.account, scopes })
       .then((res) => {
         console.log(res);
         headers['Authorization'] = `Bearer ${res.idToken}`;
