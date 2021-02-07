@@ -38,7 +38,8 @@ const getMsg = () => {
     msalApp.acquireTokenSilent({ account: store.state.msal.account, scopes })
       .then((res) => {
         console.log(res);
-        headers['Authorization'] = `Bearer ${res.idToken}`;
+        headers['Authorization'] =
+          `Bearer ${res.idTokenClaims.idp_access_token}`;
         return axios.get(endpoint, { headers });
       })
       .then((res) => {
