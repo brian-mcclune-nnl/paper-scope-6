@@ -15,4 +15,5 @@ dependencies:
     - fastapi
     - uvicorn[standard]
     - msal
-    - PyJWT
+    - python-jose[cryptography]
+    - httpx
