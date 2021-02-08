@@ -40,7 +40,7 @@ const getMsg = () => {
         console.log('acquireTokenSilent result:');
         console.log(res);
         headers['Authorization'] =
-          `Bearer ${res.access_token}`;
+          `Bearer ${res.accessToken}`;
         return axios.get(endpoint, { headers });
       })
       .then((res) => {
