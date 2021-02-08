@@ -15,6 +15,10 @@ const state = () => ({
       cacheLocation: 'localStorage',
     },
   },
+  scopes: [
+    'https://clunacy.onmicrosoft.com/' +
+    '7ea70574-6eb1-42f2-ab65-d88d33884ccb/user.impersonate',
+  ],
   accessToken: '',
   account: null
 })

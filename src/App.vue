@@ -17,7 +17,7 @@ const msg = ref("Hello Vue 3 + Vite");
 const msalApp = new PublicClientApplication(store.state.msal.config);
 
 const username = computed(() => {
-  if (store.state.msal.account === null) return '<unknown';
+  if (store.state.msal.account === null) return '<unknown>';
   else {
     const claims = store.state.msal.account.idTokenClaims;
     return `${claims.given_name} ${claims.family_name}`;
@@ -33,16 +33,18 @@ const getMsg = () => {
   let headers = { from: 'bpmcclune@gmail.com' };
 
   if (store.state.msal.account !== null) {
-    const scopes = ['https://clunacy.onmicrosoft.com/' +
-      '7ea70574-6eb1-42f2-ab65-d88d33884ccb/user.impersonate'];
-    msalApp.acquireTokenSilent({ account: store.state.msal.account, scopes })
-      .then((res) => {
+    msalApp.acquireTokenSilent({
+      account: store.state.msal.account,
+      scopes: store.state.msal.scopes
+    }).then((res) => {
+        console.log('acquireTokenSilent result:');
         console.log(res);
         headers['Authorization'] =
-          `Bearer ${res.idTokenClaims.idp_access_token}`;
+          `Bearer ${res.access_token}`;
         return axios.get(endpoint, { headers });
       })
       .then((res) => {
+        console.log('API request result:');
         console.log(res);
         msg.value = res.data.message;
       })
@@ -53,7 +55,7 @@ const getMsg = () => {
 }
 
 const signIn = () => {
-  msalApp.loginPopup({})
+  msalApp.loginPopup({ scopes: store.state.msal.scopes })
     .then((res) => {
       console.log(res);
       if (res !== null) {
