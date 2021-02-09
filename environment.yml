@@ -17,3 +17,4 @@ dependencies:
     - msal
     - python-jose[cryptography]
     - httpx
+    - pydantic
