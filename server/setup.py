@@ -23,5 +23,8 @@ setuptools.setup(
     install_requires=[
         'fastapi',
         'uvicorn[standard]',
+        'python-jose[cryptography]',
+        'httpx',
+        'pydantic',
     ],
 )
