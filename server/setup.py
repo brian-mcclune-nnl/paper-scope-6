@@ -26,5 +26,6 @@ setuptools.setup(
         'python-jose[cryptography]',
         'httpx',
         'pydantic',
+        'msal',
     ],
 )
