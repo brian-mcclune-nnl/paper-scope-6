@@ -1,8 +1,5 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <button @click="signIn">Signed in as: {{ username }}</button>
-  <button @click="getMsg">Refresh Message</button>
-  <HelloWorld :msg="msg" />
+  <router-view />
 </template>
 
 <script setup>
