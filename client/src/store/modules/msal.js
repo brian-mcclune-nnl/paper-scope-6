@@ -1,3 +1,8 @@
+import {
+  BrowserAuthError,
+  InteractionRequiredAuthError
+} from "@azure/msal-browser";
+
 // initial state
 const state = () => ({
   config: {
@@ -19,7 +24,6 @@ const state = () => ({
     'https://clunacy.onmicrosoft.com/' +
     '7ea70574-6eb1-42f2-ab65-d88d33884ccb/user.impersonate',
   ],
-  accessToken: '',
   account: null
 })
 
@@ -28,21 +32,32 @@ const getters = {}
 
 // mutations
 const mutations = {
-  setAccessToken(state, token){
-    state.accessToken = token;
-  },
-  setAccount(state, account){
+  login(state, { account, instance }) {
     state.account = account;
+    instance.setActiveAccount(account);
   }
 }
 
 // actions
 const actions = {
-  setAccessToken(context, token){
-    context.commit('setAccessToken', token);
+  createInstance(context){
+    context.commit('createInstance');
   },
-  setAccount(context, account){
-    context.commit('setAccount', account);
+  async login({ commit, state }, instance){
+    const loginRequest = {
+      scopes: state.scopes,
+      loginHint: state.account ? state.account.username : ""
+    };
+    let loginResponse = null;
+    try {
+      loginResponse = await instance.ssoSilent(loginRequest)
+    } catch (error) {
+      if (!error instanceof InteractionRequiredAuthError &&
+          !error instanceof BrowserAuthError )
+        throw error;
+      loginResponse = await instance.loginPopup(loginRequest);
+    }
+    commit('login', { account: loginResponse.account, instance });
   }
 }
 
