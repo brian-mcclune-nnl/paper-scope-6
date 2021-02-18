@@ -2,6 +2,12 @@
   <router-view />
 </template>
 
+<script setup>
+import { useStore } from "vuex";
+const store = useStore();
+store.dispatch("msal/createInstance");
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
