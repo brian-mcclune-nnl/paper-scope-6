@@ -1,7 +1,15 @@
 import {
+  PublicClientApplication,
   BrowserAuthError,
   InteractionRequiredAuthError
 } from "@azure/msal-browser";
+
+// The msalInstance gets mutated when loginPopup() is called
+// which means if made an attribute of the Vuex store state,
+// it causes errors even when called in a mutation.
+// The workaround is to have a global instance somewhere else
+// in the application.
+var msalInstance = null;
 
 // initial state
 const state = () => ({
@@ -24,7 +32,8 @@ const state = () => ({
     'https://clunacy.onmicrosoft.com/' +
     '7ea70574-6eb1-42f2-ab65-d88d33884ccb/user.impersonate',
   ],
-  account: null
+  account: null,
+  instanceCreated: false
 })
 
 // getters
@@ -32,32 +41,39 @@ const getters = {}
 
 // mutations
 const mutations = {
-  login(state, { account, instance }) {
+  createInstance(state) {
+    if (!state.instanceCreated) {
+      msalInstance = new PublicClientApplication(state.config);
+      state.instanceCreated = true;
+    }
+  },
+  login(state, account) {
     state.account = account;
-    instance.setActiveAccount(account);
+    msalInstance.setActiveAccount(account);
   }
 }
 
 // actions
 const actions = {
-  createInstance(context){
+  createInstance(context) {
     context.commit('createInstance');
   },
-  async login({ commit, state }, instance){
+  async login({ commit, state }) {
+    if (!state.instanceCreated) commit('createInstance');
     const loginRequest = {
       scopes: state.scopes,
       loginHint: state.account ? state.account.username : ""
     };
     let loginResponse = null;
     try {
-      loginResponse = await instance.ssoSilent(loginRequest)
+      loginResponse = await msalInstance.ssoSilent(loginRequest)
     } catch (error) {
       if (!error instanceof InteractionRequiredAuthError &&
           !error instanceof BrowserAuthError )
         throw error;
-      loginResponse = await instance.loginPopup(loginRequest);
+      loginResponse = await msalInstance.loginPopup(loginRequest);
     }
-    commit('login', { account: loginResponse.account, instance });
+    commit('login', loginResponse.account);
   }
 }
 
