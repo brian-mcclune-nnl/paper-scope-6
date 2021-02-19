@@ -1,11 +1,13 @@
 <template>
+  <nav-bar />
   <img alt="Vue logo" src="../assets/logo.png" />
-  <HelloWorld :msg="msg" />
+  <hello-world :msg="msg" />
 </template>
 
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import NavBar from "../components/NavBar.vue";
 import HelloWorld from "../components/HelloWorld.vue";
 
 const store = useStore();
