@@ -3,9 +3,9 @@
 </template>
 
 <script setup>
-import { useStore } from "vuex";
-const store = useStore();
-store.dispatch("msal/createInstance");
+import { useStore } from 'vuex'
+const store = useStore()
+store.dispatch('msal/createInstance')
 </script>
 
 <style lang="scss">
