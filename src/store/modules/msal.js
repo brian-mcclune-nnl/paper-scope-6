@@ -37,7 +37,13 @@ const state = () => ({
 })
 
 // getters
-const getters = {}
+const getters = {
+  username(state) {
+    if (state.account === null) return null;
+    const claims = state.account.idTokenClaims;
+    return `${claims.given_name} ${claims.family_name}`;
+  }
+}
 
 // mutations
 const mutations = {
