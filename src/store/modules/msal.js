@@ -2,14 +2,14 @@ import {
   PublicClientApplication,
   BrowserAuthError,
   InteractionRequiredAuthError
-} from "@azure/msal-browser";
+} from '@azure/msal-browser'
 
 // The msalInstance gets mutated when loginPopup() is called
 // which means if made an attribute of the Vuex store state,
 // it causes errors even when called in a mutation.
 // The workaround is to have a global instance somewhere else
 // in the application.
-var msalInstance = null;
+var msalInstance = null
 
 // initial state
 const state = () => ({
@@ -39,9 +39,9 @@ const state = () => ({
 // getters
 const getters = {
   username(state) {
-    if (state.account === null) return null;
-    const claims = state.account.idTokenClaims;
-    return `${claims.given_name} ${claims.family_name}`;
+    if (state.account === null) return null
+    const claims = state.account.idTokenClaims
+    return `${claims.given_name} ${claims.family_name}`
   }
 }
 
@@ -49,37 +49,37 @@ const getters = {
 const mutations = {
   createInstance(state) {
     if (!state.instanceCreated) {
-      msalInstance = new PublicClientApplication(state.config);
-      state.instanceCreated = true;
+      msalInstance = new PublicClientApplication(state.config)
+      state.instanceCreated = true
     }
   },
   login(state, account) {
-    state.account = account;
-    msalInstance.setActiveAccount(account);
+    state.account = account
+    msalInstance.setActiveAccount(account)
   }
 }
 
 // actions
 const actions = {
   createInstance(context) {
-    context.commit('createInstance');
+    context.commit('createInstance')
   },
   async login({ commit, state }) {
-    if (!state.instanceCreated) commit('createInstance');
+    if (!state.instanceCreated) commit('createInstance')
     const loginRequest = {
       scopes: state.scopes,
-      loginHint: state.account ? state.account.username : ""
-    };
-    let loginResponse = null;
+      loginHint: state.account ? state.account.username : ''
+    }
+    let loginResponse = null
     try {
       loginResponse = await msalInstance.ssoSilent(loginRequest)
     } catch (error) {
       if (!error instanceof InteractionRequiredAuthError &&
           !error instanceof BrowserAuthError )
-        throw error;
-      loginResponse = await msalInstance.loginPopup(loginRequest);
+        throw error
+      loginResponse = await msalInstance.loginPopup(loginRequest)
     }
-    commit('login', loginResponse.account);
+    commit('login', loginResponse.account)
   }
 }
 
