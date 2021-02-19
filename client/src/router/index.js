@@ -25,7 +25,7 @@ const account = computed(() => store.state.msal.account);
 router.beforeEach(async (to, from) => {
   if (to.path !== '/unauthenticated' && account.value === null) {
     try {
-      await store.dispatch('msal/login')
+      await store.dispatch('msal/signIn')
     } catch (error) {
       console.log(error)
       return '/unauthenticated'

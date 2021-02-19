@@ -8,7 +8,7 @@
       <a class="navbar-item" href="#">
         Profile
       </a>
-      <a class="navbar-item" href="#">
+      <a class="navbar-item" @click="signOut">
         Sign out
       </a>
     </div>
@@ -18,7 +18,7 @@
     class="navbar-item"
   >
     <div class="buttons">
-      <button class="button">
+      <button class="button" @click="signIn">
         <span class="icon">
           <i class="fas fa-sign-in-alt"></i>
         </span>
@@ -30,8 +30,19 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
+const route = useRoute()
+const router = useRouter()
 const store = useStore()
 const username = computed(() => store.getters['msal/username'])
+const signIn = async () => {
+  await store.dispatch('msal/signIn')
+  if (route.path === '/unauthenticated') router.push('/')
+}
+const signOut = async () => {
+  await store.dispatch('msal/signOut')
+  if (route.path !== '/unauthenticated') router.push('/unauthenticated')
+}
 </script>

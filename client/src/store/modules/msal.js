@@ -49,13 +49,17 @@ const getters = {
 const mutations = {
   createInstance(state) {
     if (!state.instanceCreated) {
-      msalInstance = new PublicClientApplication(state.config)
       state.instanceCreated = true
+      msalInstance = new PublicClientApplication(state.config)
     }
   },
-  login(state, account) {
+  signIn(state, account) {
     state.account = account
     msalInstance.setActiveAccount(account)
+  },
+  signOut(state) {
+    state.account = null
+    msalInstance.logout({ postLogoutRedirectUri: '/unauthenticated' })
   }
 }
 
@@ -64,11 +68,11 @@ const actions = {
   createInstance(context) {
     context.commit('createInstance')
   },
-  async login({ commit, state }) {
+  async signIn({ commit, state }) {
     if (!state.instanceCreated) commit('createInstance')
     const loginRequest = {
       scopes: state.scopes,
-      loginHint: state.account ? state.account.username : ''
+      loginHint: null
     }
     let loginResponse = null
     try {
@@ -79,7 +83,10 @@ const actions = {
         throw error
       loginResponse = await msalInstance.loginPopup(loginRequest)
     }
-    commit('login', loginResponse.account)
+    commit('signIn', loginResponse.account)
+  },
+  signOut(context) {
+    context.commit('signOut')
   }
 }
 
