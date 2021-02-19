@@ -10,11 +10,6 @@ import HelloWorld from "../components/HelloWorld.vue";
 
 const store = useStore();
 const account = computed(() => store.state.msal.account);
-const username = computed(() => {
-  if (account.value === null) return "<unknown>";
-  console.log(account.value);
-  const claims = account.value.idTokenClaims;
-  return `${claims.given_name} ${claims.family_name}`;
-});
+const username = computed(() => store.getters["msal/username"] || "<unknown");
 const msg = computed(() => `Hi ${username.value} from Vue Router!`);
 </script>
