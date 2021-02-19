@@ -8,13 +8,11 @@ const store = useStore();
 store.dispatch("msal/createInstance");
 </script>
 
-<style>
+<style lang="scss">
+@import 'bulma/css/bulma.css';
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
