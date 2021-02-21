@@ -32,4 +32,4 @@ jobs:
       with:
         app-name: 'paper-scope-6-api'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_60905476828f46a68fc2750d8471cd4d }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_super_scope_6_api }}
