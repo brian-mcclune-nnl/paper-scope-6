@@ -1,4 +1,4 @@
-# DocHunt
+# Paper Scope 6
 
-DocHunt is an application for intelligently hunting down documents!
+Paper Scope 6 is an application for intelligently hunting down documents!
 This implementation's interface is built upon Vue 3.
