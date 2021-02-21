@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Python app to Azure Web App - dochunt-fast-api
+name: Build and deploy Python app to Azure Web App - paper-scope-6-api
 
 on:
   push:
@@ -30,6 +30,6 @@ jobs:
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'dochunt-fast-api'
+        app-name: 'paper-scope-6-api'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_60905476828f46a68fc2750d8471cd4d }}

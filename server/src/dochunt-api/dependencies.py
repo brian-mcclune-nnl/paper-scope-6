@@ -1,4 +1,4 @@
-"""The dochunt-api dependencies module.
+"""The paper-scope-6-api dependencies module.
 
 """
 

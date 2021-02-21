@@ -1,4 +1,4 @@
-"""The dochunt-api main module.
+"""The paper-scope-6-api main module.
 
 """
 
@@ -14,8 +14,8 @@ app = FastAPI()
 origins = [
     "https://localhost:3000",
     "https://localhost:3000/",
-    "https://dochunt-vue3-spa.azurewebsites.net",
-    "https://dochunt-vue3-spa.azurewebsites.net/",
+    "https://paper-scope-6.azurewebsites.net",
+    "https://paper-scope-6.azurewebsites.net/",
 ]
 
 app.add_middleware(

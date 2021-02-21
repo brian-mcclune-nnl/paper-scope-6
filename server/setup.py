@@ -1,4 +1,4 @@
-"""Dochunt server setup script.
+"""Paper Scope 6 server setup script.
 
 """
 
@@ -6,12 +6,12 @@ import setuptools
 
 
 setuptools.setup(
-    name='dochunt-api',
+    name='paper-scope-6-api',
     version='0.0.1',
     author='Brian McClune',
     author_email='author@example.com',
     description='An API for finding documents by likeness',
-    url='https://github.com/McClunatic/dochunt-vue3',
+    url='https://github.com/McClunatic/paper-scope-6-api',
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
     classifiers=[
