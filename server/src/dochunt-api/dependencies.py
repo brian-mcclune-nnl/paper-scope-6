@@ -21,7 +21,7 @@ class AuthSettings(BaseSettings):
     b2c_signupsignin_userflow: str
 
     class Config:
-        env_file = '.env'
+        env_file = '.env.local'
 
     def __hash__(self):
         return hash(tuple(item for item in self.dict().items()))
