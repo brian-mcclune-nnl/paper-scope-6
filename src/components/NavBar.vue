@@ -27,7 +27,7 @@
         Documentation
       </a>
       </div>
-      <div class="navbar-end">
+      <div v-if="authEnabled" class="navbar-end">
         <nav-bar-user-element />
       </div>
     </div>
@@ -41,4 +41,5 @@ let isActive = ref(window.innerWidth >= 1024)
 const toggleMenu = () => {
   isActive.value = !isActive.value
 }
+const authEnabled = import.meta.env.VITE_AUTH_ENABLED
 </script>
