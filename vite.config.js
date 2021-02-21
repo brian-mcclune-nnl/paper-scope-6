@@ -8,7 +8,7 @@ export default {
   plugins: [vue()],
   server: {
     https: {
-      pfx: fs.readFileSync('./dochunt.pfx'),
+      pfx: fs.readFileSync('./paperscope.pfx'),
       passphrase: 'dochunting'
     }
   }
