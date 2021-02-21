@@ -12,6 +12,6 @@ import HelloWorld from '../components/HelloWorld.vue'
 
 const store = useStore();
 const account = computed(() => store.state.msal.account)
-const username = computed(() => store.getters['msal/username'] || '<unknown')
+const username = computed(() => store.getters['msal/username'] || '<unknown>')
 const msg = computed(() => `Hi ${username.value} from Vue Router!`)
 </script>
