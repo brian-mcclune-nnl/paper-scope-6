@@ -47,8 +47,8 @@ async def get_current_user(
     auth_settings: AuthSettings = Depends(get_auth_settings),
     msal_app: msal.PublicClientApplication = Depends(get_msal_app),
     authorization: Optional[str] = Header(None),
+    x_ms_token_aad_id_token: Optional[str] = Header(None),
 ):
-    return {'given_name': 'Brian', 'family_name': 'McClune'}
     tenant = urlparse(auth_settings.b2c_endpoint).path.lstrip('/')
     scopes = [
         f'https://{tenant}/{auth_settings.b2c_client_id}/user.impersonate',
@@ -56,20 +56,29 @@ async def get_current_user(
     if payload := msal_app.acquire_token_silent(scopes, None):
         return f'{payload["given_name"]} {payload["family_name"]}'
 
-    if authorization is None or not authorization.startswith('Bearer '):
-        detail = 'missing from headers' if authorization is None else \
-            'does not start with Bearer'
+    if authorization is None and x_ms_token_aad_id_token is None:
+        detail = 'Authorization and X-MS-TOKEN-AAD-ID_TOKEN headers missing'
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f'Authorization {detail}',
+            detail=detail,
             headers={'WWW-Authenticate': 'Bearer'},
         )
+    elif x_ms_token_aad_id_token is not None:
+        token = x_ms_token_aad_id_token
+    elif authorization.startswith('Bearer '):
+        token = authorization.replace('Bearer ', '')
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Authorization header does not start with "Bearer "',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+
     try:
         jwks_uri = (
             f'{auth_settings.b2c_endpoint}/discovery/v2.0/keys?p='
             f'{auth_settings.b2c_signupsignin_userflow}'
         )
-        token = authorization.replace('Bearer ', '')
         header = jwt.get_unverified_header(token)
         async with httpx.AsyncClient() as client:
             resp = await client.get(jwks_uri)
@@ -82,13 +91,16 @@ async def get_current_user(
             algorithms=[header['alg']],
             audience=auth_settings.b2c_client_id,
         )
-        if 'scp' not in payload or payload['scp'] != 'user.impersonate':
+        if x_ms_token_aad_id_token is None and (
+            'scp' not in payload or
+            payload['scp'] != 'user.impersonate'
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='Scope user.impersonate missing from access token',
                 headers={'WWW-Authenticate': 'Bearer'},
             )
-        return f'{payload["given_name"]} {payload["family_name"]}'
+        return payload
     except jwt.JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

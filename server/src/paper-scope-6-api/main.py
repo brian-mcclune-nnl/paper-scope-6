@@ -38,4 +38,5 @@ async def root(request: Request, user: User = Depends(get_current_user)):
     return {
         'message': f'Hello {username} from FastAPI',
         'request_headers': request.headers,
+        'payload': user,
     }
