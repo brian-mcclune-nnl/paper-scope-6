@@ -34,7 +34,8 @@ class User(BaseModel):
 
 @app.get('/')
 async def root(request: Request, user: User = Depends(get_current_user)):
+    username = f'{user["given_name"]} {user["family_name"]}'
     return {
-        'message': f'Hello {user} from FastAPI',
+        'message': f'Hello {username} from FastAPI',
         'request_headers': request.headers,
     }
