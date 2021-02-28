@@ -101,6 +101,12 @@ async def get_current_user(
                 headers={'WWW-Authenticate': 'Bearer'},
             )
         return payload
+    except IndexError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Unable to find key with matching kid',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
     except jwt.JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
