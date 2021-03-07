@@ -28,4 +28,5 @@ setuptools.setup(
         'pydantic',
         'msal',
     ],
+    package_data={'': ['matches.json']},
 )
