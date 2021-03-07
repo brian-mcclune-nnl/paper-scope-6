@@ -6,6 +6,7 @@ dependencies:
   - nodejs>=15.0
   - python>=3.8,<3.9
   - numpy
+  - pandas
   - scipy
   - conda-forge::jupyterlab
   - pip
