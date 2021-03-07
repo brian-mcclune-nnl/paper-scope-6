@@ -7,9 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .dependencies import get_current_user
+from .routers import search
 
 
 app = FastAPI()
+
+app.include_router(search.router)
 
 origins = [
     "https://localhost:3000",
