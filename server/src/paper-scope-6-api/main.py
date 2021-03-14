@@ -17,6 +17,8 @@ app.include_router(search.router)
 origins = [
     "https://localhost:3000",
     "https://localhost:3000/",
+    "https://localhost:5000",
+    "https://localhost:5000/",
     "https://paper-scope-6.azurewebsites.net",
     "https://paper-scope-6.azurewebsites.net/",
 ]
