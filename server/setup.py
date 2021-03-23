@@ -27,6 +27,8 @@ setuptools.setup(
         'httpx',
         'pydantic',
         'msal',
+        'requests',
+        'sqlalchemy>=1.4',
     ],
     package_data={'': ['matches.json']},
 )
