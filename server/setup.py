@@ -24,6 +24,7 @@ setuptools.setup(
         'fastapi',
         'uvicorn[standard]',
         'python-jose[cryptography]',
+        'cryptography<3.4',
         'httpx',
         'pydantic',
         'msal',

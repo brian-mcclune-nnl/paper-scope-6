@@ -17,6 +17,7 @@ dependencies:
     - uvicorn[standard]
     - msal
     - python-jose[cryptography]
+    - cryptography<3.4
     - httpx
     - pydantic
     - requests
