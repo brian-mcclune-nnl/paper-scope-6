@@ -3,3 +3,7 @@ uvicorn[standard]
 python-jose[cryptography]
 httpx
 pydantic
+msal
+requests
+sqlalchemy>=1.4
+pyodbc

@@ -29,6 +29,7 @@ setuptools.setup(
         'msal',
         'requests',
         'sqlalchemy>=1.4',
+        'pyodbc',
     ],
     package_data={'': ['matches.json']},
 )
