@@ -32,6 +32,7 @@ setuptools.setup(
         'sqlalchemy>=1.4',
         'pyodbc',
         'gensim',
+        'python-Levenshtein',
     ],
     package_data={'': ['matches.json']},
 )

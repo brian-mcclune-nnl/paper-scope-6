@@ -13,6 +13,7 @@ dependencies:
   - pip:
     - flake8
     - gensim
+    - python-Levenshtein
     - fastapi
     - uvicorn[standard]
     - msal

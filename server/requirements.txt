@@ -9,3 +9,4 @@ requests
 sqlalchemy>=1.4
 pyodbc
 gensim
+python-Levenshtein
