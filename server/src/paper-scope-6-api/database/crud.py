@@ -2,6 +2,7 @@
 
 from typing import List
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import case
 
@@ -19,3 +20,11 @@ def get_articles_by_indices(db: Session, indices: List[int]):
     )
     return db.query(Article).filter(
         Article.index.in_(indices)).order_by(ordering).all()
+
+
+def get_articles_by_contains(db: Session, other: str):
+    return db.query(Article).filter(or_(
+        Article.title.contains(other),
+        Article.description.contains(other),
+        Article.content.contains(other),
+    )).all()
