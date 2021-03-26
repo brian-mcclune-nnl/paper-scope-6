@@ -31,6 +31,7 @@ setuptools.setup(
         'requests',
         'sqlalchemy>=1.4',
         'pyodbc',
+        'gensim',
     ],
     package_data={'': ['matches.json']},
 )
