@@ -49,6 +49,7 @@ async def lda_search(
     print(f'Getting metadata for {len(results)} most similar results')
     indices = [result[0].item() for result in results]
     similarities = [result[1].item() for result in results]
+    print(f'Similarities: {similarities}')
     articles = get_articles_by_indices(db, indices)
 
     # Package response as relevant fields + similarity per result
@@ -89,6 +90,4 @@ async def sql_search(
         article_dict['similarity'] = sim
         response.append(article_dict)
 
-    import time
-    time.sleep(3)
     return response
