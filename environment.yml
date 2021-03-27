@@ -24,3 +24,5 @@ dependencies:
     - requests
     - sqlalchemy>=1.4
     - pyodbc
+    - aiofiles
+    - aiohttp
