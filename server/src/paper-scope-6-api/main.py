@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .dependencies import get_current_user
-from .lda import get_tempdir, load_model
+from .lda import get_tempdir, schedule_model_downloads
 from .routers import search
 
 
@@ -34,12 +34,12 @@ app.add_middleware(
 
 
 @app.on_event('startup')
-def startup_event():
-    load_model()
+async def startup_event():
+    await schedule_model_downloads()
 
 
 @app.on_event('shutdown')
-async def shutdown_event():
+def shutdown_event():
     get_tempdir().cleanup()
 
 

@@ -17,7 +17,7 @@ from ..database.crud import (
     get_articles_by_contains,
 )
 from ..database.schemas import Article
-from ..lda import model as lda_model
+from ..lda import load_corpus, load_lda, load_index
 
 
 router = APIRouter(prefix='/search', tags=['search'])
@@ -38,9 +38,9 @@ async def lda_search(
 
     # Use index to look up similarity of associated, modeled document
     print(f'Getting similarities for index: {article.index}')
-    corpus = lda_model['corpus']
-    lda = lda_model['lda']
-    sim_index = lda_model['index']
+    corpus = await load_corpus()
+    lda = await load_lda()
+    sim_index = await load_index()
 
     sim_index.num_best = best
     results = sim_index[lda[corpus[article.index]]]
@@ -49,7 +49,6 @@ async def lda_search(
     print(f'Getting metadata for {len(results)} most similar results')
     indices = [result[0].item() for result in results]
     similarities = [result[1].item() for result in results]
-    print(f'Similarities: {similarities}')
     articles = get_articles_by_indices(db, indices)
 
     # Package response as relevant fields + similarity per result
@@ -79,7 +78,7 @@ async def sql_search(
     articles = get_articles_by_contains(db, q)
 
     # Package response as relevant fields + similarity per result
-    print(f'articles: {len(articles)}')
+    print(f'Matching articles: {len(articles)}')
     response = []
     for sim, article in itertools.zip_longest([], articles, fillvalue=1):
         article_dict = {

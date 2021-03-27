@@ -1,9 +1,11 @@
+import asyncio
 import os
 import tempfile
 
 from functools import lru_cache
 
-import requests
+import aiofiles
+import aiohttp
 
 from gensim.corpora.mmcorpus import MmCorpus
 from gensim.models.ldamodel import LdaModel
@@ -12,6 +14,7 @@ from pydantic import BaseSettings
 
 
 model = {}
+tasks = {}
 
 
 class ModelSettings(BaseSettings):
@@ -37,7 +40,7 @@ def get_tempdir():
     return tempfile.TemporaryDirectory()
 
 
-def get_corpus():
+async def get_corpus():
     model_settings = get_model_settings()
     tempdir = get_tempdir()
 
@@ -45,18 +48,19 @@ def get_corpus():
     mm_fname = model_settings.corpus
     mm_tmpdir = tempdir
     mm_urls = [f'{models_uri}/{mm_fname}{suffix}' for suffix in ('', '.index')]
-    for url in mm_urls:
-        fname = url.rsplit('/', 1)[1]
-        print(f'Downloading {url}...')
-        res = requests.get(url)
-        with open(os.path.join(mm_tmpdir.name, fname), 'wb') as fh:
-            fh.write(res.content)
+    async with aiohttp.ClientSession() as session:
+        for url in mm_urls:
+            fname = url.rsplit('/', 1)[1]
+            print(f'Downloading {url}...')
+            async with session.get(url) as res:
+                fpath = os.path.join(mm_tmpdir.name, fname)
+                async with aiofiles.open(fpath, 'wb') as fh:
+                    await fh.write(await res.read())
 
-    return MmCorpus(os.path.join(mm_tmpdir.name, mm_fname))
+    return os.path.join(mm_tmpdir.name, mm_fname)
 
 
-@lru_cache
-def get_lda():
+async def get_lda():
     model_settings = get_model_settings()
     tempdir = get_tempdir()
 
@@ -67,18 +71,19 @@ def get_lda():
         f'{models_uri}/{lda_fname}{suffix}'
         for suffix in ('', '.expElogbeta.npy', '.id2word', '.state')
     ]
-    for url in lda_urls:
-        fname = url.rsplit('/', 1)[1]
-        print(f'Downloading {url}...')
-        res = requests.get(url)
-        with open(os.path.join(lda_tmpdir.name, fname), 'wb') as fh:
-            fh.write(res.content)
+    async with aiohttp.ClientSession() as session:
+        for url in lda_urls:
+            fname = url.rsplit('/', 1)[1]
+            print(f'Downloading {url}...')
+            async with session.get(url) as res:
+                fpath = os.path.join(lda_tmpdir.name, fname)
+                async with aiofiles.open(fpath, 'wb') as fh:
+                    await fh.write(await res.read())
 
-    return LdaModel.load(os.path.join(lda_tmpdir.name, lda_fname))
+    return os.path.join(lda_tmpdir.name, lda_fname)
 
 
-@lru_cache
-def get_index():
+async def get_index():
     model_settings = get_model_settings()
     tempdir = get_tempdir()
 
@@ -86,21 +91,40 @@ def get_index():
     sim_fname = model_settings.index
     sim_tmpdir = tempdir
     sim_urls = [f'{models_uri}/{sim_fname}{suffix}' for suffix in ('', '.0')]
-    for url in sim_urls:
-        fname = url.rsplit('/', 1)[1]
-        res = requests.get(url)
-        print(f'Downloading {url}...')
-        with open(os.path.join(sim_tmpdir.name, fname), 'wb') as fh:
-            fh.write(res.content)
+    async with aiohttp.ClientSession() as session:
+        for url in sim_urls:
+            fname = url.rsplit('/', 1)[1]
+            print(f'Downloading {url}...')
+            async with session.get(url) as res:
+                fpath = os.path.join(sim_tmpdir.name, fname)
+                async with aiofiles.open(fpath, 'wb') as fh:
+                    await fh.write(await res.read())
 
-    index_path = os.path.join(sim_tmpdir.name, sim_fname)
-    index = SparseMatrixSimilarity.load(index_path)
-    for shard in index.shards:
-        shard.dirname = sim_tmpdir.name
-    return index
+    return os.path.join(sim_tmpdir.name, sim_fname)
 
 
-def load_model():
-    model['corpus'] = get_corpus()
-    model['lda'] = get_lda()
-    model['index'] = get_index()
+async def schedule_model_downloads():
+    tasks['corpus'] = asyncio.create_task(get_corpus())
+    tasks['lda'] = asyncio.create_task(get_lda())
+    tasks['index'] = asyncio.create_task(get_index())
+
+
+async def load_corpus():
+    if 'corpus' not in model:
+        model['corpus'] = MmCorpus(await tasks['corpus'])
+    return model['corpus']
+
+
+async def load_lda():
+    if 'lda' not in model:
+        model['lda'] = LdaModel.load(await tasks['lda'])
+    return model['lda']
+
+
+async def load_index():
+    if 'index' not in model:
+        index_file = await tasks['index']
+        model['index'] = SparseMatrixSimilarity.load(index_file)
+        for shard in model['index'].shards:
+            shard.dirname = os.path.dirname(index_file)
+    return model['index']

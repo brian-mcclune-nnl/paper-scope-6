@@ -33,6 +33,8 @@ setuptools.setup(
         'pyodbc',
         'gensim',
         'python-Levenshtein',
+        'aiohttp',
+        'aiofiles',
     ],
     package_data={'': ['matches.json']},
 )
