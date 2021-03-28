@@ -31,7 +31,7 @@ setuptools.setup(
         'requests',
         'sqlalchemy>=1.4',
         'pyodbc',
-        'gensim',
+        'gensim<4',
         'python-Levenshtein',
         'aiohttp',
         'aiofiles',
