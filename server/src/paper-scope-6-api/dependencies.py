@@ -14,6 +14,21 @@ from jose import jwt
 from pydantic import BaseSettings
 
 
+class ElkSettings(BaseSettings):
+    elastic_uri: str
+
+    class Config:
+        env_file = '.env.local'
+
+    def __hash__(self):
+        return hash(tuple(item for item in self.dict().items()))
+
+
+@lru_cache
+def get_elk_settings():
+    return ElkSettings()
+
+
 class AuthSettings(BaseSettings):
     b2c_client_id: str
     b2c_client_secret: str

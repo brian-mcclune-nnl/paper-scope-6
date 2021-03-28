@@ -7,6 +7,8 @@ import json
 
 from typing import List, Optional
 
+import aiohttp
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -17,6 +19,7 @@ from ..database.crud import (
     get_articles_by_contains,
 )
 from ..database.schemas import Article
+from ..dependencies import get_elk_settings, ElkSettings
 from ..lda import load_corpus, load_lda, load_index
 
 
@@ -88,5 +91,45 @@ async def sql_search(
         article_dict['groups'] = json.loads(article_dict['groups'])
         article_dict['similarity'] = sim
         response.append(article_dict)
+
+    return response
+
+
+@router.get('/elk', response_model=List[Article])
+async def elk_search(
+    q: Optional[str] = None,
+    best: Optional[int] = 50,
+    elk_settings: ElkSettings = Depends(get_elk_settings),
+):
+    print(f'q: {q}')
+    if not q:
+        return []
+
+    # Search for articles that contain the string in title, desc, or content
+    headers = {'Content-Type': 'application/json'}
+    uri = elk_settings.elastic_uri
+    data = {
+        'size': best,
+        'query': {
+            'multi_match': {
+                'query': q,
+                'type': 'phrase',
+                'fields': ['title', 'description', 'content'],
+            },
+        },
+    }
+    async with aiohttp.ClientSession(headers=headers) as session:
+        async with session.get(uri, data=json.dumps(data).encode()) as res:
+            results = await res.json()
+
+    # Package response as relevant fields + similarity per result
+    hits = results['hits']['hits']
+    print(f'Matching articles: {len(hits)}')
+    response = []
+    for hit in hits:
+        article = hit['_source']
+        article['groups'] = json.loads(article['groups'])
+        article['similarity'] = 1
+        response.append(article)
 
     return response
