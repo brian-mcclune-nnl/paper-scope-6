@@ -12,7 +12,7 @@ dependencies:
   - pip
   - pip:
     - flake8
-    - gensim
+    - gensim<4
     - python-Levenshtein
     - fastapi
     - uvicorn[standard]
