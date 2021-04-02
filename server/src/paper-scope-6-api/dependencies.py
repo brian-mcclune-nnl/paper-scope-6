@@ -34,6 +34,8 @@ class AuthSettings(BaseSettings):
     b2c_client_secret: str
     b2c_endpoint: str
     b2c_signupsignin_userflow: str
+    elastic_authority: str
+    elastic_client_id: str
 
     class Config:
         env_file = '.env.local'
@@ -48,7 +50,7 @@ def get_auth_settings():
 
 
 @lru_cache
-def get_msal_app(auth_settings: AuthSettings = Depends(get_auth_settings)):
+def get_public_app(auth_settings: AuthSettings = Depends(get_auth_settings)):
     return msal.PublicClientApplication(
         auth_settings.b2c_client_id,
         authority=(
@@ -58,9 +60,18 @@ def get_msal_app(auth_settings: AuthSettings = Depends(get_auth_settings)):
     )
 
 
+@lru_cache
+def get_private_app(auth_settings: AuthSettings = Depends(get_auth_settings)):
+    return msal.ConfidentialClientApplication(
+        auth_settings.b2c_client_id,
+        client_credential=auth_settings.b2c_client_secret,
+        authority=auth_settings.elastic_authority,
+    )
+
+
 async def get_current_user(
     auth_settings: AuthSettings = Depends(get_auth_settings),
-    msal_app: msal.PublicClientApplication = Depends(get_msal_app),
+    msal_app: msal.PublicClientApplication = Depends(get_public_app),
     authorization: Optional[str] = Header(None),
     x_ms_token_aad_id_token: Optional[str] = Header(None),
 ):
@@ -126,5 +137,25 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Error decoding access token',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+
+
+async def get_obo_token(
+    auth_settings: AuthSettings = Depends(get_auth_settings),
+    msal_app: msal.ConfidentialClientApplication = Depends(get_private_app),
+):
+    tenant = urlparse(auth_settings.b2c_endpoint).path.lstrip('/')
+    scopes = [
+        f'https://{tenant}/{auth_settings.elastic_client_id}/.default',
+    ]
+    token_resp = msal_app.acquire_token_for_client(scopes)
+    try:
+        return token_resp['access_token']
+    except KeyError:
+        print(token_resp)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Unable to acquire elastic access token',
             headers={'WWW-Authenticate': 'Bearer'},
         )

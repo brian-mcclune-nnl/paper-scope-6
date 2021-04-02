@@ -19,7 +19,7 @@ from ..database.crud import (
     get_articles_by_contains,
 )
 from ..database.schemas import Article
-from ..dependencies import get_elk_settings, ElkSettings
+from ..dependencies import get_obo_token, get_elk_settings, ElkSettings
 from ..lda import load_corpus, load_lda, load_index
 
 
@@ -99,6 +99,7 @@ async def sql_search(
 async def elk_search(
     q: Optional[str] = None,
     best: Optional[int] = 50,
+    obo_token: str = Depends(get_obo_token),
     elk_settings: ElkSettings = Depends(get_elk_settings),
 ):
     print(f'q: {q}')
@@ -106,7 +107,10 @@ async def elk_search(
         return []
 
     # Search for articles that contain the string in title, desc, or content
-    headers = {'Content-Type': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {obo_token}',
+    }
     uri = elk_settings.elastic_uri
     data = {
         'size': best,
@@ -123,6 +127,7 @@ async def elk_search(
             results = await res.json()
 
     # Package response as relevant fields + similarity per result
+    print(results)
     hits = results['hits']['hits']
     print(f'Matching articles: {len(hits)}')
     response = []
