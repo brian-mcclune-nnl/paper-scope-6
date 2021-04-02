@@ -153,7 +153,6 @@ async def get_obo_token(
     try:
         return token_resp['access_token']
     except KeyError:
-        print(token_resp)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Unable to acquire elastic access token',

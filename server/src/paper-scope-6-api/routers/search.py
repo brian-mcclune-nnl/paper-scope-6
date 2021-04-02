@@ -127,7 +127,6 @@ async def elk_search(
             results = await res.json()
 
     # Package response as relevant fields + similarity per result
-    print(results)
     hits = results['hits']['hits']
     print(f'Matching articles: {len(hits)}')
     response = []
