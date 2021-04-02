@@ -5,7 +5,7 @@
 import itertools
 import json
 
-from typing import List, Optional
+from typing import Optional
 
 import aiohttp
 
@@ -18,22 +18,22 @@ from ..database.crud import (
     get_articles_by_indices,
     get_articles_by_contains,
 )
-from ..database.schemas import Article
+from ..database.schemas import Response
 from ..dependencies import get_obo_token, get_elk_settings, ElkSettings
-from ..lda import load_corpus, load_lda, load_index
+from ..lda import load_corpus, load_lda, load_index, get_tsne_datasets
 
 
 router = APIRouter(prefix='/search', tags=['search'])
 
 
-@router.get('/lda', response_model=List[Article])
+@router.get('/lda', response_model=Response)
 async def lda_search(
     q: Optional[int] = None,
     best: Optional[int] = 50,
     db: Session = Depends(get_db),
 ):
     if not q:
-        return []
+        return {'results': []}
 
     # Use ID to lookup index in corpus
     print(f'Querying for id: {q}')
@@ -54,6 +54,9 @@ async def lda_search(
     similarities = [result[1].item() for result in results]
     articles = get_articles_by_indices(db, indices)
 
+    # Use indices to get tSNE of topic weights
+    datasets = get_tsne_datasets(indices)
+
     # Package response as relevant fields + similarity per result
     response = []
     for similarity, article in zip(similarities, articles):
@@ -65,17 +68,17 @@ async def lda_search(
         article_dict['similarity'] = similarity
         response.append(article_dict)
 
-    return response
+    return {'results': response, 'datasets': datasets}
 
 
-@router.get('/sql', response_model=List[Article])
+@router.get('/sql', response_model=Response)
 async def sql_search(
     q: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     print(f'q: {q}')
     if not q:
-        return []
+        return {'results': []}
 
     # Search for articles that contain the string in title, desc, or content
     articles = get_articles_by_contains(db, q)
@@ -92,10 +95,10 @@ async def sql_search(
         article_dict['similarity'] = sim
         response.append(article_dict)
 
-    return response
+    return {'results': response}
 
 
-@router.get('/elk', response_model=List[Article])
+@router.get('/elk', response_model=Response)
 async def elk_search(
     q: Optional[str] = None,
     best: Optional[int] = 50,
@@ -104,7 +107,7 @@ async def elk_search(
 ):
     print(f'q: {q}')
     if not q:
-        return []
+        return {'results': []}
 
     # Search for articles that contain the string in title, desc, or content
     headers = {
@@ -136,4 +139,4 @@ async def elk_search(
         article['similarity'] = 1
         response.append(article)
 
-    return response
+    return {'results': response}

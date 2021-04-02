@@ -2,7 +2,7 @@
 
 import datetime
 
-from typing import List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -23,3 +23,8 @@ class Article(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Response(BaseModel):
+    results: List[Article]
+    datasets: Optional[List[List[Dict[str, float]]]]
