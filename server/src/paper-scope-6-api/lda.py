@@ -3,9 +3,12 @@ import os
 import tempfile
 
 from functools import lru_cache
+from typing import List
 
 import aiofiles
 import aiohttp
+import numpy as np
+import sklearn.manifold as sm
 
 from gensim.corpora.mmcorpus import MmCorpus
 from gensim.models.ldamodel import LdaModel
@@ -128,3 +131,33 @@ async def load_index():
         for shard in model['index'].shards:
             shard.dirname = os.path.dirname(index_file)
     return model['index']
+
+
+def get_tsne_datasets(indices: List[int]):
+
+    lda = model['lda']
+    corpus = model['corpus']
+
+    # Get topic weights for referenced article indices
+    weights = []
+    for idx in indices:
+        weights.append([weight for _, weight in lda[corpus[idx]]])
+    weights = np.nan_to_num(weights)
+
+    # Record dominant topics for each article
+    topics = np.argmax(weights, axis=1)
+
+    # Do tSNE Dimension Reduction
+    tsne = sm.TSNE(init='pca')
+    embedding = tsne.fit_transform(weights)
+
+    # Break values up into datasets by topic, format amenable to Chart.js
+    unique_topics = np.unique(topics)
+
+    datasets = []
+    for topic in unique_topics:
+        datasets.append([
+            {'x': x, 'y': y} for x, y in embedding[topics == topic]
+        ])
+
+    return datasets
