@@ -139,10 +139,10 @@ def get_tsne_datasets(indices: List[int]):
     corpus = model['corpus']
 
     # Get topic weights for referenced article indices
-    weights = []
-    for idx in indices:
-        weights.append([weight for _, weight in lda[corpus[idx]]])
-    weights = np.nan_to_num(weights)
+    weights = np.zeros((len(indices), lda.num_topics))
+    for idx, article in enumerate(indices):
+        for idy, weight in lda[corpus[article]]:
+            weights[idx, idy] = weight
 
     # Record dominant topics for each article
     topics = np.argmax(weights, axis=1)
