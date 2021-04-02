@@ -12,3 +12,5 @@ gensim<4
 python-Levenshtein
 aiofiles
 aiohttp
+numpy
+scikit-learn

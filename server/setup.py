@@ -35,6 +35,8 @@ setuptools.setup(
         'python-Levenshtein',
         'aiohttp',
         'aiofiles',
+        'numpy',
+        'scikit-learn',
     ],
     package_data={'': ['matches.json']},
 )
