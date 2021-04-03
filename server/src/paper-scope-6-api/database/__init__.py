@@ -43,7 +43,10 @@ def get_connection_string(db_settings: DbSettings):
     return f'mssql+pyodbc:///?odbc_connect={params}'
 
 
-SessionLocal = sessionmaker(create_engine(get_connection_string(DbSettings())))
+SessionLocal = sessionmaker(create_engine(
+    get_connection_string(DbSettings()),
+    pool_pre_ping=True,
+))
 
 
 def get_db() -> Generator:
