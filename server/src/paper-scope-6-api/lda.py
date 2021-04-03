@@ -134,7 +134,6 @@ async def load_index():
 
 
 def get_tsne_datasets(indices: List[int]):
-
     lda = model['lda']
     corpus = model['corpus']
 
@@ -148,7 +147,7 @@ def get_tsne_datasets(indices: List[int]):
     topics = np.argmax(weights, axis=1)
 
     # Do tSNE Dimension Reduction
-    tsne = sm.TSNE(init='pca')
+    tsne = sm.TSNE(init='pca', angle=0.01)
     embedding = tsne.fit_transform(weights)
 
     # Break values up into datasets by topic, format amenable to Chart.js
